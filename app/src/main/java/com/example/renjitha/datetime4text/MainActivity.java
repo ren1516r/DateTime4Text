@@ -7,6 +7,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,7 +16,10 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 private Button btn_date,btn_time;
@@ -47,10 +51,24 @@ private Button btn_date,btn_time;
             mMonth = c.get(Calendar.MONTH);
             mDay = c.get(Calendar.DAY_OF_MONTH);
 
+
+
             DatePickerDialog datePickerDialog=new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
                 @Override
                 public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                     txtDate.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
+
+                //    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+                  /*  try {
+                        Date target_date = sdf.parse(String.valueOf(txtDate.getText()));
+                        Log.e("targetdate",String.valueOf(target_date));
+                    } catch (ParseException e) {
+
+                        e.printStackTrace();
+                    }*/
+
+
+
                 }
             },mYear,mMonth,mDay);
 
