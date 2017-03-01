@@ -1,7 +1,10 @@
 package com.example.renjitha.datetime4text;
 
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -22,8 +25,10 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-private Button btn_date,btn_time;
+private Button btn_date,btn_time,btn_save;
     EditText txtDate,txtTime;
+
+    private Calendar target_cal =Calendar.getInstance();
     private int mYear, mMonth, mDay, mHour, mMinute;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,13 +37,14 @@ private Button btn_date,btn_time;
 
         btn_date=(Button)findViewById(R.id.btn_date);
         btn_time=(Button)findViewById(R.id.btn_time);
+        btn_save=(Button)findViewById(R.id.btn_save);
 
         txtDate=(EditText)findViewById(R.id.in_date);
         txtTime=(EditText)findViewById(R.id.in_time);
 
         btn_date.setOnClickListener(this);
         btn_time.setOnClickListener(this);
-
+       btn_save.setOnClickListener(this);
     }
 
 
@@ -55,9 +61,15 @@ private Button btn_date,btn_time;
 
             DatePickerDialog datePickerDialog=new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
                 @Override
-                public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                    txtDate.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
+                public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth)
+                {
+                    int display_month;
+                    display_month=monthOfYear+1;
+                    txtDate.setText(dayOfMonth + "-" + (display_month) + "-" + year);
+target_cal.set(Calendar.YEAR, year);
 
+                    target_cal.set(Calendar.MONTH,monthOfYear);
+                    target_cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
                 //    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
                   /*  try {
                         Date target_date = sdf.parse(String.valueOf(txtDate.getText()));
@@ -75,7 +87,7 @@ private Button btn_date,btn_time;
             datePickerDialog.show();
 
         }
-        else{
+        else if(v==btn_time){
 
             final Calendar c = Calendar.getInstance();
             mHour = c.get(Calendar.HOUR_OF_DAY);
@@ -86,9 +98,24 @@ private Button btn_date,btn_time;
                 @Override
                 public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                     txtTime.setText(hourOfDay+" : "+minute);
+                    target_cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                    target_cal.set(Calendar.MINUTE,minute);
                 }
             },mHour,mMinute,false);
             timePickerDialog.show();
+        }
+
+
+        else if (v==btn_save){
+          Log.d("Target CAl", String.valueOf(target_cal.get(Calendar.MONTH)));
+
+            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+            Intent i =new Intent(MainActivity.this,AlarmRecBroadcast.class);
+
+            PendingIntent pendingIntent =PendingIntent.getBroadcast(MainActivity.this,0,i,0);
+Log.d("Target time", String.valueOf(target_cal.getTime()));
+            alarmManager.set(AlarmManager.RTC,target_cal.getTimeInMillis(),pendingIntent);
         }
 
     }
